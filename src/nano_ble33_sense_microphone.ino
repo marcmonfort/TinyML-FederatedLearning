@@ -1,5 +1,4 @@
 
-
 // If your target is limited in memory remove this macro to save 10K RAM
 #define EIDSP_QUANTIZE_FILTERBANK   0
 
@@ -42,7 +41,6 @@ void setup()
     Serial.begin(9600);
 
     // Start button_configuration
-    //buttons.setup();
     pinMode(button_1, INPUT);
     pinMode(button_2, INPUT);
     pinMode(button_3, INPUT);
@@ -187,16 +185,14 @@ void loop()
             }
         }
         Serial.print("\n");
-        // Output to graph!
-        Serial.println("graph");
-        Serial.println(num_epochs);
 
-        float error = myNetwork.get_error();
-        char* myError = (char*) &error;
-        Serial.write(myError, sizeof(float));
-
-        // Serial.println(myNetwork.get_error());
-        Serial.println(num_button);
+        // Info to plot & graph!
+        // Serial.println("graph");
+        // Serial.println(num_epochs);
+        // float error = myNetwork.get_error();
+        // char* myError = (char*) &error;
+        // Serial.write(myError, sizeof(float));
+        // Serial.println(num_button);
 
         // make it blink
         if (num_button == 4 && num_button_output != 0) {
@@ -211,44 +207,15 @@ void loop()
             digitalWrite(num_button_output + LEDR - 1, HIGH); // OFF
         }
 
-
-        /***********************
-         * Federate Learning
-         ***********************/
-
-        // Serial.println("start");
-        // Serial.println(InputNodes+1);
-        // Serial.println(HiddenNodes);
-
-        // float* myHiddenWeights = myNetwork.get_HiddenWeights();
-        // char *b_output = ( char* ) myHiddenWeights; // Serialize data
-
-        // // Sending model
-        // for (uint16_t i = 0; i < (InputNodes+1) * HiddenNodes; ++i) {
-        //     Serial.write(b_output+i*sizeof(float), sizeof(float));
-        // }
-
-        // // Receiving model
-        // for (uint16_t i = 0; i < (InputNodes+1) * HiddenNodes; ++i) {
-        //     Serial.write('n');
-        //     while(Serial.available() < 4) {}
-        //     for (int n = 0; n < 4; n++) {
-        //         b_output[i*4+n] = Serial.read();
-        //         // delay(1);
-        //     }
-        // }
-
-        /***********************
-         * END - Federate Learning
-         ***********************/
-
-
         digitalWrite(LED_BUILTIN, LOW);    // OFF
         button_pressed = false;
     }
     else {
-        // Serial.println("idl...");
+        
         if (Serial.read() == '>') { // s -> FEDERATED LEARNING
+            /***********************
+             * Federate Learning
+             ***********************/
             Serial.write('<');
             digitalWrite(LED_BUILTIN, HIGH);    // ON
             delay(1000);
@@ -300,17 +267,16 @@ void loop()
                 
 
             }
-            digitalWrite(LED_BUILTIN, LOW);    // OFF
+            /***********************
+             * END - Federate Learning
+             ***********************/
 
+            digitalWrite(LED_BUILTIN, LOW);    // OFF
         }
     }
 }
 
-/**
- * @brief      Printf function uses vsnprintf and output using Arduino Serial
- *
- * @param[in]  format     Variable argument list
- */
+
 void ei_printf(const char *format, ...) {
     static char print_buf[1024] = { 0 };
 
@@ -324,10 +290,7 @@ void ei_printf(const char *format, ...) {
     }
 }
 
-/**
- * @brief      PDM buffer full callback
- *             Get data and call audio thread callback
- */
+
 static void pdm_data_ready_inference_callback(void)
 {
     int bytesAvailable = PDM.available();
@@ -348,13 +311,7 @@ static void pdm_data_ready_inference_callback(void)
     }
 }
 
-/**
- * @brief      Init inferencing struct and setup/start PDM
- *
- * @param[in]  n_samples  The n samples
- *
- * @return     { description_of_the_return_value }
- */
+
 static bool microphone_inference_start(uint32_t n_samples)
 {
     inference.buffer = (int16_t *)malloc(n_samples * sizeof(int16_t));
@@ -387,11 +344,7 @@ static bool microphone_inference_start(uint32_t n_samples)
     return true;
 }
 
-/**
- * @brief      Wait on new data
- *
- * @return     True when finished
- */
+
 static bool microphone_inference_record(void)
 {
     inference.buf_ready = 0;
@@ -404,9 +357,7 @@ static bool microphone_inference_record(void)
     return true;
 }
 
-/**
- * Get raw audio signal data
- */
+
 static int microphone_audio_signal_get_data(size_t offset, size_t length, float *out_ptr)
 {
     numpy::int16_to_float(&inference.buffer[offset], out_ptr, length);
@@ -414,15 +365,9 @@ static int microphone_audio_signal_get_data(size_t offset, size_t length, float 
     return 0;
 }
 
-/**
- * @brief      Stop PDM and release buffers
- */
+
 static void microphone_inference_end(void)
 {
     PDM.end();
     free(inference.buffer);
 }
-
-#if !defined(EI_CLASSIFIER_SENSOR) || EI_CLASSIFIER_SENSOR != EI_CLASSIFIER_SENSOR_MICROPHONE
-#error "Invalid model for current sensor."
-#endif

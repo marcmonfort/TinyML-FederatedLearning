@@ -69,19 +69,15 @@ def plot_graph(graph_data):
 num_devices = read_number("Number of devices: ")
 
 devices = [read_port(f"Port device_{i+1}: ") for i in range(num_devices)]
-# for i in range(num_devices):
-#     device.append(read_port(f"Port device_{i+1}: "))
 
 size_hidden_layer = (650+1)*16
 size_output_layer = (16+1)*3
 
 np.random.seed(12345)
-# layer = np.ones(651 * 16)
-# InitialWeightMax = 0.5
 hidden_layer = np.random.uniform(-0.5,0.5, (650+1)*16).astype('float32')
 output_layer = np.random.uniform(-0.5, 0.5, (16+1)*3).astype('float32')
 
-# Pre-trained model
+# To load a Pre-trained model
 # hidden_layer = np.load("./hidden_montserrat.npy")
 # output_layer = np.load("./output_montserrat.npy")
 
@@ -90,14 +86,14 @@ for d in devices:
 
 devices_connected = devices
 
-graph = [] # Modified to graph
+# graph = [] # Modified to graph
 ################
 # Infinite loop
 ################
 while True:
 
     max_time = 10
-    # max_time = 100000000
+    # max_time = 100000000 # Modified to graph
 
     for d in devices:
         d.timeout = 0
@@ -111,6 +107,13 @@ while True:
             msg = d.readline().decode()
             if (len(msg) > 0):
                 print(f'({d.port}):', msg, end='')
+                # Modified to graph
+                # if msg[:-2] == 'graph':
+                #     n_epooch = int(d.readline()[:-2])
+                #     n_error = d.read(4)
+                #     [n_error] = struct.unpack('f', n_error)
+                #     n_button = int(d.readline()[:-2])
+                #     graph.append([n_epooch,n_error, n_button])
 
         countdown = max_time - int(time.time() - ini_time)
         if countdown <= 0:
@@ -119,27 +122,6 @@ while True:
             print(f'Starting FL in {countdown} seconds')
             countdown_print.remove(countdown)
 
-    # Modified to obtain the graphs with error
-    # while True:
-    #     for d in devices:
-    #         msg = d.readline().decode()
-    #         if (len(msg) > 0):
-    #             print(f'({d.port}):', msg, end='')
-    #             if msg[:-2] == 'graph':
-    #                 n_epooch = int(d.readline()[:-2])
-    #                 n_error = d.read(4)
-    #                 [n_error] = struct.unpack('f', n_error)
-    #                 n_button = int(d.readline()[:-2])
-    #                 graph.append([n_epooch,n_error, n_button])
-
-
-    #     countdown = max_time - int(time.time() - ini_time)
-    #     if countdown <= 0:
-    #         break
-    #     elif countdown in countdown_print:
-    #         print(f'Starting FL in {countdown} seconds')
-    #         countdown_print.remove(countdown)
-    # Modified until here
 
     print('Starting Federated Learning')
     old_devices_connected = devices_connected
