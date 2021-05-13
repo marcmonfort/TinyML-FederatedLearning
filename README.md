@@ -4,7 +4,7 @@ Final degree project for the Bachelor's Degree in Computer Science of the [Unive
 
 
 ## How tu use it
-1. Configure the Arduino Nano 33 BLE Sense boards like in the image. ![board setup](.\images\arduino_sketch.png)
+1. Configure the Arduino Nano 33 BLE Sense boards like in the image. ![board setup](images/arduino_sketch.png)
 2. Open the project with PlatformIO and flash the firmware to all the boards.
 3. Run the fl_server.py using Python3
     1. Specify the number of devices used
