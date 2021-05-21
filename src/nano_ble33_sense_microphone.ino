@@ -1,3 +1,5 @@
+// This program uses several functionalities and modifications 
+// from the EdgeImpulse inferencing library.
 
 // If your target is limited in memory remove this macro to save 10K RAM
 #define EIDSP_QUANTIZE_FILTERBANK   0

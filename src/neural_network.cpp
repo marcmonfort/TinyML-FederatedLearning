@@ -1,3 +1,6 @@
+// This code is a modification of the code from http://robotics.hobbizine.com/arduinoann.html
+
+
 #include <arduino.h>
 #include "neural_network.h"
 #include <math.h>
@@ -92,7 +95,7 @@ void NeuralNetwork::backward(const float Input[], const float Target[]){
         }
         Output[i] = 1.0 / (1.0 + exp(-Accum));
         OutputDelta[i] = (Target[i] - Output[i]) * Output[i] * (1.0 - Output[i]);
-        Error += 0.5 * (Target[i] - Output[i]) * (Target[i] - Output[i]);
+        Error += 0.33333 * (Target[i] - Output[i]) * (Target[i] - Output[i]);
     }
 
 
